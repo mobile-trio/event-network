@@ -4,11 +4,12 @@ import AppContainer from './src/navigations/AppNavigation';
 import * as Permissions from 'expo-permissions'
 import * as Notifications from 'expo-notifications'
 import Constants from 'expo-constants'
+import Firebase from './firebaseConfig'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
+    shouldPlaySound: true,
     shouldSetBadge: false,
   }),
 });
@@ -81,6 +82,14 @@ async function registerForPushNotificationsAsync() {
     console.log(token);
   } else {
     alert('Must use physical device for Push Notifications');
+  }
+
+  if(token){
+    const res = await Firebase
+    .firestore()
+    .collection('users')
+    .doc(Firebase.auth().current.uid)
+    .set({token},{merge:true})
   }
 
   if (Platform.OS === 'android') {
