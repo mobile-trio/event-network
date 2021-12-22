@@ -12,6 +12,7 @@ import SearchScreen from '../screens/Search/SearchScreen';
 import IngredientsDetailsScreen from '../screens/IngredientsDetails/IngredientsDetailsScreen';
 import SignUp from '../screens/SignUp/SignUp'
 import Login from '../screens/Login/Login'
+import EventAdd from '../screens/EventAdd/EventAdd'
 
  const Stack = createStackNavigator();
 
@@ -30,6 +31,7 @@ function MainNavigator() {
       <Stack.Screen name='Home' component={HomeScreen} />
       <Stack.Screen name='SignUp' component={SignUp} />
       <Stack.Screen name='Login' component={Login} />
+      <Stack.Screen name='EventAdd' component={EventAdd} />
       <Stack.Screen name='Categories' component={CategoriesScreen}/>
       <Stack.Screen name='Recipe' component={RecipeScreen}/>
       <Stack.Screen name='RecipesList' component={RecipesListScreen} />

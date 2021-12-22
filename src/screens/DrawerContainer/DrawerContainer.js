@@ -26,6 +26,14 @@ export default function DrawerContainer(props) {
           }}
         />
         <MenuButton
+          title="EVENT ADD"
+          source={require("../../../assets/icons/home.png")}
+          onPress={() => {
+            navigation.navigate("EventAdd");
+            navigation.closeDrawer();
+          }}
+        />
+        <MenuButton
           title="SIGN IN"
           source={require("../../../assets/icons/home.png")}
           onPress={() => {

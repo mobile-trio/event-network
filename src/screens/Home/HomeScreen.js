@@ -1,13 +1,13 @@
 import React, { useLayoutEffect,useEffect,useState } from "react";
 import { FlatList, Text, View, TouchableHighlight, Image } from "react-native";
 import styles from "./styles";
-//import { recipes,categories,ingredients } from "../../data/dataArrays";
+//import { events,categories,ingredients } from "../../data/dataArrays";
 import MenuImage from "../../components/MenuImage/MenuImage";
 import { getCategoryNameFirebase,addAllRecipes,addCategories,addIngredients,getAllRecipes } from "../../data/MockDataAPI";
 
 export default function HomeScreen(props) {
   const { navigation } = props;
-  const [recipes,setRecipes] = useState([])
+  const [events,setEvents] = useState([])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -36,7 +36,7 @@ export default function HomeScreen(props) {
                 ))
                 .catch(er=>{console.log(er)})
             })   
-        })).then(res=>setRecipes(res))
+        })).then(res=>setEvents(res))
       }
     ) 
   }, [])
@@ -57,7 +57,7 @@ export default function HomeScreen(props) {
 
   return (
     <View>
-      <FlatList vertical showsVerticalScrollIndicator={false} numColumns={2} data={recipes} renderItem={renderRecipes} keyExtractor={(item) => `${item.recipeId}`} />
+      <FlatList vertical showsVerticalScrollIndicator={false} numColumns={2} data={events} renderItem={renderRecipes} keyExtractor={(item) => `${item.recipeId}`} />
     </View>
   );
 }
