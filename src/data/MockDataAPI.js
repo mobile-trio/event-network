@@ -105,6 +105,19 @@ export async function getAllRecipes(){
   return recipesArray;
 }
 
+export async function getAllEvents(){
+  var recipesArray = [];
+  await Firebase.firestore()
+    .collection("events")
+    .get()
+    .then((snapshot) => {
+       recipesArray = snapshot.docs.map(doc => {
+        return doc.data();
+      })})
+  console.log(recipesArray)
+  return recipesArray;
+}
+
 export function addRecipe(recipe){
   Firebase.firestore()
   .collection("recipes").add({
