@@ -2,22 +2,22 @@ import AppButton from '../../components/AppButton/AppButton';
 import LoadingIndicator from '../../components/LoadingIndicator/LoadingIndicator';
 import { useValidation } from 'react-native-form-validator';
 import React, {useState } from 'react'
-import { View, Button, TextInput, Text, Image, Switch, KeyboardAvoidingView, ScrollView, TouchableOpacity,Alert } from 'react-native'
+import { View, Button, TextInput, Text,  KeyboardAvoidingView, ScrollView, Alert } from 'react-native'
 import Firebase from '../../../firebaseConfig';
-import {registerForPushNotificationsAsync} from "../../components/Notification/Notification"
 import commonFormStyles from '../../styles/commonFormStyles';
 
-export default function Login(props) {
+export default function Register(props) {
 
   const { navigation, route } = props;
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const [isLoading, setIsLoading] = useState(false)
 
   
   const successAlert = () =>
-  Alert.alert('Logined In!', 'Logined In Succesfully', [
+  Alert.alert('Registered!', 'Registered Successfully', [
     { text: 'OK', onPress: () => console.log('OK Pressed') },
   ]);
   const errorAlert = (error) =>
@@ -28,29 +28,38 @@ export default function Login(props) {
 
   const { validate, isFieldInError, getErrorsInField, getErrorMessages } =
   useValidation({
-    state: { email,password },
+    state: { email,password,confirmPassword },
   });
 
   const _onPressButton = () => {
     if(validate({
       email: { email: true, required: true },
-      password: { string: true,  required: true },
+      password: { string: true,min:6,  required: true },
+      confirmPassword: { equalPassword: password },
     })){
-      Login()
+      onRegister()
     }
   };
 
-  const Login = () => {
-    setIsLoading(true)
-    Firebase.auth().signInWithEmailAndPassword(email,password)
+  const onRegister = () => {
+    Firebase.auth().createUserWithEmailAndPassword(email,password)
     .then((result)=>{
-      registerForPushNotificationsAsync().then(
-        res=>{}
-      )
-      setIsLoading(false)
+      Firebase.firestore().collection("users")
+        .doc(Firebase.auth().currentUser.uid)
+        .set({
+          email,
+          password
+        }).then(res=>{
+          setIsLoading(false)
+          console.log(result)
+          successAlert()
+          navigation.navigate("Login");
+        }).catch((error)=>{
+          setIsLoading(false)
+          console.log(error)
+          errorAlert(error.toString())
+        })
       console.log(result)
-      successAlert()
-      navigation.navigate("Home");
     })
     .catch((error)=>{
       setIsLoading(false)
@@ -58,6 +67,7 @@ export default function Login(props) {
       errorAlert(error.toString())
     })
   }
+
   return (
     <View style={commonFormStyles.container}>
       <LoadingIndicator isLoading={isLoading}/>
@@ -79,10 +89,21 @@ export default function Login(props) {
             <TextInput
               style={commonFormStyles.formItems}
               placeholder="password"
+              secureTextEntry={true}
               onChangeText={password => setPassword(password)}
             />
             {isFieldInError('password') &&
               getErrorsInField('password').map(errorMessage => (
+                <Text  key={errorMessage} style={commonFormStyles.errorText}>{errorMessage}</Text>
+              ))}
+            <TextInput
+              style={commonFormStyles.formItems}
+              placeholder="confirmPassword"
+              secureTextEntry={true}
+              onChangeText={confirmPassword => setConfirmPassword(confirmPassword)}
+            />
+            {isFieldInError('confirmPassword') &&
+              getErrorsInField('confirmPassword').map(errorMessage => (
                 <Text  key={errorMessage} style={commonFormStyles.errorText}>{errorMessage}</Text>
               ))}
             <AppButton
@@ -96,3 +117,4 @@ export default function Login(props) {
   )
 
 }
+

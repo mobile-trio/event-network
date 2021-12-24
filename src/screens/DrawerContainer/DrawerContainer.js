@@ -34,10 +34,10 @@ export default function DrawerContainer(props) {
           }}
         />
         <MenuButton
-          title="SIGN UP"
+          title="REGISTER"
           source={require("../../../assets/icons/home.png")}
           onPress={() => {
-            navigation.navigate("SignUp");
+            navigation.navigate("Register");
             navigation.closeDrawer();
           }}
         />

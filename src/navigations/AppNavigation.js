@@ -10,7 +10,7 @@ import DrawerContainer from '../screens/DrawerContainer/DrawerContainer';
 import IngredientScreen from '../screens/Ingredient/IngredientScreen';
 import SearchScreen from '../screens/Search/SearchScreen';
 import IngredientsDetailsScreen from '../screens/IngredientsDetails/IngredientsDetailsScreen';
-import SignUp from '../screens/SignUp/SignUp'
+import Register from '../screens/Register/Register'
 import Login from '../screens/Login/Login'
 import EventAdd from '../screens/EventAdd/EventAdd'
 
@@ -29,7 +29,7 @@ function MainNavigator() {
       }}
     >
       <Stack.Screen name='Home' component={HomeScreen} />
-      <Stack.Screen name='SignUp' component={SignUp} />
+      <Stack.Screen name='Register' component={Register} />
       <Stack.Screen name='Login' component={Login} />
       <Stack.Screen name='Event Add' component={EventAdd} />
       <Stack.Screen name='Categories' component={CategoriesScreen}/>

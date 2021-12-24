@@ -6,10 +6,11 @@ import styles from "./styles";
 import AppButton from '../../components/AppButton/AppButton';
 import LoadingIndicator from '../../components/LoadingIndicator/LoadingIndicator';
 import { useValidation } from 'react-native-form-validator';
+import {sendNotificationToAllUsers} from '../../components/Notification/Notification';
 
 
 
-export default function Login() {
+const EventAdd = () => {
 
   const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
 
@@ -44,7 +45,6 @@ export default function Login() {
       addEvent()
     }
   };
-
 
   const successAlert = () =>
   Alert.alert('Event Created!', 'Event created succesfully', [
@@ -101,6 +101,7 @@ export default function Login() {
       }).then((function () {
         console.log("success")
         successAlert()
+        sendNotificationToAllUsers("New Event Created!",name)
       })).catch(()=>{
         errorAlert()
       }).finally(()=>{
@@ -120,6 +121,7 @@ export default function Login() {
       }).then((function () {
         console.log("success")
         successAlert()
+        sendNotificationToAllUsers("New Event Created!",name)
       })).catch(()=>{
         errorAlert()
       }).finally(()=>{
@@ -267,3 +269,4 @@ export default function Login() {
   )
 }
 
+export default EventAdd
