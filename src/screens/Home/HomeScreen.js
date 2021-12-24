@@ -4,6 +4,7 @@ import styles from "./styles";
 //import { events,categories,ingredients } from "../../data/dataArrays";
 import MenuImage from "../../components/MenuImage/MenuImage";
 import { getCategoryNameFirebase,addAllRecipes,addCategories,addIngredients,getAllRecipes } from "../../data/MockDataAPI";
+import Firebase from '../../../firebaseConfig';
 
 export default function HomeScreen(props) {
   const { navigation } = props;
@@ -57,6 +58,7 @@ export default function HomeScreen(props) {
 
   return (
     <View>
+      <Text>{Firebase.auth().currentUser?.uid}</Text>
       <FlatList vertical showsVerticalScrollIndicator={false} numColumns={2} data={events} renderItem={renderRecipes} keyExtractor={(item) => `${item.recipeId}`} />
     </View>
   );

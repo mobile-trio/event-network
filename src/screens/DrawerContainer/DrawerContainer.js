@@ -3,6 +3,7 @@ import { View } from "react-native";
 import PropTypes from "prop-types";
 import styles from "./styles";
 import MenuButton from "../../components/MenuButton/MenuButton";
+import Firebase from '../../../firebaseConfig';
 
 export default function DrawerContainer(props) {
   const { navigation } = props;
@@ -18,26 +19,10 @@ export default function DrawerContainer(props) {
           }}
         />
         <MenuButton
-          title="LOGIN"
-          source={require("../../../assets/icons/home.png")}
-          onPress={() => {
-            navigation.navigate("Login");
-            navigation.closeDrawer();
-          }}
-        />
-        <MenuButton
           title="EVENT ADD"
           source={require("../../../assets/icons/home.png")}
           onPress={() => {
             navigation.navigate("Event Add");
-            navigation.closeDrawer();
-          }}
-        />
-        <MenuButton
-          title="REGISTER"
-          source={require("../../../assets/icons/home.png")}
-          onPress={() => {
-            navigation.navigate("Register");
             navigation.closeDrawer();
           }}
         />
@@ -57,6 +42,35 @@ export default function DrawerContainer(props) {
             navigation.closeDrawer();
           }}
         />
+        {!Firebase.auth().currentUser&&
+
+        <MenuButton
+          title="LOGIN"
+          source={require("../../../assets/icons/home.png")}
+          onPress={() => {
+            navigation.navigate("Login");
+            navigation.closeDrawer();
+          }}
+        />
+        }
+      {!Firebase.auth().currentUser&&
+        <MenuButton
+          title="REGISTER"
+          source={require("../../../assets/icons/home.png")}
+          onPress={() => {
+            navigation.navigate("Register");
+            navigation.closeDrawer();
+          }}
+        />
+      }
+      {Firebase.auth().currentUser&&
+      <MenuButton
+          title="Logout"
+          source={require("../../../assets/icons/home.png")}
+          onPress={() => {
+            Firebase.auth().signOut()
+          }}
+        />}
       </View>
     </View>
   );
