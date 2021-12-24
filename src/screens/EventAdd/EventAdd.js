@@ -1,26 +1,59 @@
 import React, { useState, useEffect } from 'react'
-import { View, Button, TextInput, Text, Image, Switch, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Button, TextInput, Text, Image, Switch, KeyboardAvoidingView, ScrollView, TouchableOpacity,Alert } from 'react-native'
 import Firebase from '../../../firebaseConfig';
 import * as ImagePicker from 'expo-image-picker'
 import styles from "./styles";
 import AppButton from '../../components/AppButton/AppButton';
+import LoadingIndicator from '../../components/LoadingIndicator/LoadingIndicator';
+import { useValidation } from 'react-native-form-validator';
+
 
 
 export default function Login() {
 
   const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
-  const [image, setImage] = useState(null);
 
+  const [image, setImage] = useState(null);
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [location, setLocation] = useState("")
-  const [imageURL, setImageURL] = useState("")
   const [category, setCategory] = useState("")
-  const [isImageFromGallery, setIsImageFromGallery] = useState(false)
 
+  const [isLoading, setIsLoading] = useState(false)
+
+  const [isImageFromGallery, setIsImageFromGallery] = useState(false)
   const [isPrivate, setIsPrivate] = useState(false);
   const toggleSwitch = () => setIsPrivate(previousState => !previousState);
-  const toggleSwitchGallery = () => setIsImageFromGallery(previousState => !previousState);
+  const toggleSwitchGallery = () => {
+    setImage()
+    setIsImageFromGallery(previousState => !previousState)
+  };
+
+  const { validate, isFieldInError, getErrorsInField, getErrorMessages } =
+  useValidation({
+    state: { name, description, location, category },
+  });
+
+  const _onPressButton = () => {
+    if(validate({
+      name: { string: true,minlength: 3, maxlength: 20, required: true },
+      description: { string: true, maxlength: 60, required: true },
+      location: { string: true, required: true },
+      category: { string: true, required: true  },
+    })){
+      addEvent()
+    }
+  };
+
+
+  const successAlert = () =>
+  Alert.alert('Event Created!', 'Event created succesfully', [
+    { text: 'OK', onPress: () => console.log('OK Pressed') },
+  ]);
+  const errorAlert = () =>
+  Alert.alert('Error', 'Someting went wrong', [
+    { text: 'OK', onPress: () => console.log('OK Pressed') },
+  ]);
 
   useEffect(() => {
     (async () => {
@@ -48,9 +81,15 @@ export default function Login() {
   };
 
 
+  const addEvent = () => {
+    isImageFromGallery?
+      crateToDo():isPrivate?
+        saveTodo(image):saveTodoPublic(image)
+  }
   const saveTodo = (imageURL) => {
+    setIsLoading(true)
     Firebase.firestore()
-      .collection('events')
+      .collection('privateEvents')
       .doc(Firebase.auth().currentUser.uid)
       .collection('userEvents')
       .add({
@@ -58,11 +97,38 @@ export default function Login() {
         description,
         location,
         imageURL,
+        category
       }).then((function () {
         console.log("success")
-      }))
+        successAlert()
+      })).catch(()=>{
+        errorAlert()
+      }).finally(()=>{
+        setIsLoading(false)
+      })
   }
+  const saveTodoPublic = (imageURL) => {
+    setIsLoading(true)
+    Firebase.firestore()
+      .collection('publicEvents')
+      .add({
+        name,
+        description,
+        location,
+        imageURL,
+        category
+      }).then((function () {
+        console.log("success")
+        successAlert()
+      })).catch(()=>{
+        errorAlert()
+      }).finally(()=>{
+        setIsLoading(false)
+      })
+  }
+
   const crateToDo = async () => {
+    setIsLoading(true)
     if (image) {
       const childPath = `events/${Firebase.auth().currentUser.uid}/${Math.random().toString(36)}`
 
@@ -81,18 +147,20 @@ export default function Login() {
 
       const taskCompleted = () => {
         task.snapshot.ref.getDownloadURL().then((snapshot) => {
-          saveTodo(snapshot)
+          isPrivate? saveTodo(snapshot): saveTodoPublic(snapshot)
           console.log(snapshot)
+          setIsLoading(false)
         })
       }
 
       const taskError = snapshot => {
         console.log(snapshot)
+        setIsLoading(false)
       }
 
       task.on("state_changed", taskProgress, taskError, taskCompleted)
     } else {
-      saveTodo("https://firebasestorage.googleapis.com/v0/b/mobil-programlama-b7483.appspot.com/o/events%2FmBa4IuAMM7cjCib4bQRfrtOGuHA2%2Ffunction%20random()%20%7B%20%5Bnative%20code%5D%20%7D?alt=media&token=1954d5e9-e15b-4d9c-af73-89e38f5fcbea")
+      
     }
 
 
@@ -106,6 +174,7 @@ export default function Login() {
   return (
 
     <View style={styles.container}>
+      <LoadingIndicator isLoading={isLoading}/>
       <KeyboardAvoidingView
              style={{flex:1}}
              behavior={Platform.OS === 'ios' ? 'position' : null}
@@ -136,27 +205,43 @@ export default function Login() {
               onChangeText={imageURL => setImage(imageURL)}
             />
           }
-            <Image source={{ uri: image }} style={{ minHeight: 150, borderRadius: 8, marginTop: 8 }} />
+            {image&&<Image source={{ uri: image }} style={{ minHeight: 150, borderRadius: 8, marginTop: 8 }} />}
             <TextInput
               style={styles.formItems}
               placeholder="name"
               onChangeText={name => setName(name)}
             />
+            {isFieldInError('name') &&
+              getErrorsInField('name').map(errorMessage => (
+                <Text key={errorMessage} style={styles.errorText}>{errorMessage}</Text>
+              ))}
             <TextInput
               style={styles.formItems}
               placeholder="description"
               onChangeText={description => setDescription(description)}
             />
+            {isFieldInError('description') &&
+              getErrorsInField('description').map(errorMessage => (
+                <Text  key={errorMessage} style={styles.errorText}>{errorMessage}</Text>
+              ))}
             <TextInput
               style={styles.formItems}
               placeholder="location"
               onChangeText={location => setLocation(location)}
             />
+              {isFieldInError('location') &&
+              getErrorsInField('location').map(errorMessage => (
+                <Text key={errorMessage} style={styles.errorText}>{errorMessage}</Text>
+              ))}
             <TextInput
               style={styles.formItems}
               placeholder="category"
-              onChangeText={category => setImageURL(category)}
+              onChangeText={category => setCategory(category)}
             />
+              {isFieldInError('category') &&
+              getErrorsInField('category').map(errorMessage => (
+                <Text key={errorMessage}style={styles.errorText}>{errorMessage}</Text>
+              ))}
             <View style={{ flexDirection: "row", marginBottom: 24 }}>
               <Text style={{ flex: 0, marginTop: 12 }}>
                 {isPrivate ? "Private" : "Public"}
@@ -172,9 +257,8 @@ export default function Login() {
             </View>
             <AppButton
               style={styles.button}
-              onPress={() => crateToDo()}
-              title="Sign Up" />
-
+              onPress={() => _onPressButton()}
+              title="Add Event" />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -31,9 +31,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
 
+  },
+  errorText: {
+    color: "red",
+    fontSize: 10
   }
-  
-
 });
 
 export default styles;
