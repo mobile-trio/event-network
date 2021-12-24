@@ -105,6 +105,37 @@ export async function getAllRecipes(){
   return recipesArray;
 }
 
+export async function getAllPublicEvents(){
+  var recipesArray = [];
+  await Firebase.firestore()
+    .collection("publicEvents")
+    .get()
+    .then((snapshot) => {
+       recipesArray = snapshot.docs.map(doc => {
+        const id = doc.id;
+        const data = doc.data();
+        return {id,...data};
+      })})
+  console.log(recipesArray)
+  return recipesArray;
+}
+
+export async function getUserByEmail(email){
+  var recipesArray = [];
+  await Firebase.firestore()
+    .collection("users")
+    .where('email','==',email)
+    .get()
+    .then((snapshot) => {
+       recipesArray = snapshot.docs.map(doc => {
+        const id = doc.id;
+        const data = doc.data();
+        return {id,...data};
+      })})
+  console.log(recipesArray)
+  return recipesArray;
+}
+
 export async function getAllEvents(){
   var recipesArray = [];
   await Firebase.firestore()

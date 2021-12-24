@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import { View } from "react-native";
 import PropTypes from "prop-types";
 import styles from "./styles";
@@ -7,6 +7,10 @@ import Firebase from '../../../firebaseConfig';
 
 export default function DrawerContainer(props) {
   const { navigation } = props;
+  const [user, setUser] = useState()
+  Firebase.auth().onAuthStateChanged( (currentUser) => {
+    setUser(currentUser)
+  })
   return (
     <View style={styles.content}>
       <View style={styles.container}>
@@ -53,7 +57,7 @@ export default function DrawerContainer(props) {
           }}
         />
         }
-      {!Firebase.auth().currentUser&&
+      {!user&&
         <MenuButton
           title="REGISTER"
           source={require("../../../assets/icons/home.png")}
@@ -63,7 +67,16 @@ export default function DrawerContainer(props) {
           }}
         />
       }
-      {Firebase.auth().currentUser&&
+      {user&&
+      <MenuButton
+          title="PROFILE"
+          source={require("../../../assets/icons/home.png")}
+          onPress={() => {
+            navigation.navigate("Profile");
+            navigation.closeDrawer();
+          }}
+        />}
+      {user&&
       <MenuButton
           title="Logout"
           source={require("../../../assets/icons/home.png")}

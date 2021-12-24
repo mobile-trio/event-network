@@ -1,4 +1,5 @@
 import React from 'react'
+
 import {createStackNavigator} from '@react-navigation/stack'
 import {NavigationContainer} from '@react-navigation/native'
 import {createDrawerNavigator} from '@react-navigation/drawer' 
@@ -13,8 +14,12 @@ import IngredientsDetailsScreen from '../screens/IngredientsDetails/IngredientsD
 import Register from '../screens/Register/Register'
 import Login from '../screens/Login/Login'
 import EventAdd from '../screens/EventAdd/EventAdd'
+import ProfileScreen from '../screens/ProfileScreen/ProfileScreen'
 
- const Stack = createStackNavigator();
+const Stack = createStackNavigator();
+
+
+
 
 function MainNavigator() {
   return(
@@ -38,6 +43,7 @@ function MainNavigator() {
       <Stack.Screen name='Ingredient' component={IngredientScreen} />
       <Stack.Screen name='Search' component={SearchScreen} />
       <Stack.Screen name='IngredientsDetails' component={IngredientsDetailsScreen} />
+      <Stack.Screen name='Profile' component={ProfileScreen} />
     </Stack.Navigator>
   )
 } 
