@@ -9,64 +9,54 @@ import firebase from "firebase";
 
 
 const PrivateEvents = (props) =>{
+  const { navigation } = props;
   const [user, setUser] = useState()
   const [events,setEvents] = useState([])
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   useEffect(() => {
-    //addIngredients(ingredients)
-    setIsRefreshing(true)
-      Firebase.firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser?.uid)
-      .get()
-      .then((snapshot) => {
-        if(snapshot.exists){
-          let friends = snapshot.data().friends;
-          setUser(snapshot.data())
-          console.log(snapshot.data())
-
-          Promise.all(
-            friends.map(friend=>{
-              return new Promise((resolve, reject) => {
-                getPrivateFriendEvents(friend)
-                  .then(friendEvents=>resolve(
-                    friend,
-                    friend.friendEvents= friendEvents.map(event=>{
-                      event.userId=friend.id
-                      event.userEmail=friend.email
-                      return event
-                      }
-                    )
-                  ))
-                  .catch(er=>{console.log(er)})
-              })   
-
-            })).then(res=>{
-              const result = Array.prototype.concat.apply([],res.map(item=>item.friendEvents))
-              console.log(result)
-              setEvents(result)
-            })
-            
-        }
-        else{
-          console.log("does not exist")
-        }
-        setIsRefreshing(false)
-      })
-    
+    handleRefresh()
   }, [firebase.auth().currentUser?.uid])
 
   const handleRefresh = () => {
     setIsRefreshing(true)
-    getAllPublicEvents().then(res=>{
-      setEvents(res)
+    Firebase.firestore()
+    .collection("users")
+    .doc(firebase.auth().currentUser?.uid)
+    .get()
+    .then((snapshot) => {
+      if(snapshot.exists){
+        let friends = snapshot.data().friends;
+        setUser(snapshot.data())
+        console.log(snapshot.data())
+
+        Promise.all(
+          friends.map(friend=>{
+            return new Promise((resolve, reject) => {
+              getPrivateFriendEvents(friend)
+                .then(friendEvents=>resolve(
+                  friend,
+                  friend.friendEvents= friendEvents
+                ))
+                .catch(er=>{console.log(er)})
+            })   
+
+          })).then(res=>{
+            const result = Array.prototype.concat.apply([],res.map(item=>item.friendEvents))
+            console.log(result)
+            setEvents(result)
+          })
+          
+      }
+      else{
+        console.log("does not exist")
+      }
       setIsRefreshing(false)
     })
   }
 
   const onPressRecipe = (item) => {
-    navigation.navigate("Recipe", { item });
+    navigation.navigate("Recipe", { item,isPrivate:true });
   };
 
   const renderRecipes = ({ item }) => (

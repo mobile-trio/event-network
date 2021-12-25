@@ -37,17 +37,21 @@ const styles = StyleSheet.create({
     marginHorizontal: 0
   },
   infoRecipeContainer: {
-    flex: 1,
-    margin: 25,
-    marginTop: 20,
-    justifyContent: 'center',
-    alignItems: 'center'
+    color: "#61dafb",
+    fontSize: 30,
+    fontWeight: "bold",
+    marginHorizontal: 24,
+    marginVertical: 12,
+    
   },
   infoContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    borderColor: '#009688',
+    borderBottomWidth: 2,
+    alignItems: 'center',
   },
   buttonContainer: {
     flex: 1,
@@ -66,10 +70,19 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   category: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: 'bold',
     margin: 10,
-    color: '#2cd18a'
+    color: 'black',
+    borderColor: '#009688',
+    borderBottomWidth: 2,
+  },
+  infoRow: {
+    fontSize: 18,
+    margin: 10,
+    color: 'black',
+    
+
   },
   infoDescriptionRecipe: {
     textAlign: 'left',

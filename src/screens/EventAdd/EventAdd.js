@@ -7,6 +7,8 @@ import AppButton from '../../components/AppButton/AppButton';
 import LoadingIndicator from '../../components/LoadingIndicator/LoadingIndicator';
 import { useValidation } from 'react-native-form-validator';
 import {sendNotificationToAllUsers} from '../../components/Notification/Notification';
+import DatePicker from '@react-native-community/datetimepicker';
+import firebase from 'firebase';
 
 
 
@@ -19,6 +21,9 @@ const EventAdd = () => {
   const [description, setDescription] = useState("")
   const [location, setLocation] = useState("")
   const [category, setCategory] = useState("")
+  const [value, setValue] = useState(new Date(Date.now()));
+  const [mode, setMode] = useState('value');
+  const [show, setShow] = useState(false)
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -81,7 +86,39 @@ const EventAdd = () => {
   };
 
 
+  const onChange = (event, selectedValue) => {
+    console.log(selectedValue)
+    setShow(Platform.OS === 'ios');
+    if (mode == 'date') {
+     const currentDate = selectedValue || new Date();
+     setValue(currentDate);
+     setMode('time');
+     setShow(Platform.OS !== 'ios'); // to show time
+   } else {
+     const currentTime = selectedValue || new Date();
+     setValue(new Date(currentTime));
+     setShow(Platform.OS === 'ios'); // to hide back the picker
+     setMode('date'); // defaulting to date for next open
+   }
+   console.log(value)
+
+  };
+
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
+
+
   const addEvent = () => {
+    console.log(value)
     isImageFromGallery?
       crateToDo():isPrivate?
         saveTodo(image):saveTodoPublic(image)
@@ -97,7 +134,10 @@ const EventAdd = () => {
         description,
         location,
         imageURL,
-        category
+        category,
+        datetime:value,
+        createdBy:firebase.auth().currentUser.uid,
+        createdByEmail:firebase.auth().currentUser.email
       }).then((function () {
         console.log("success")
         successAlert()
@@ -117,7 +157,10 @@ const EventAdd = () => {
         description,
         location,
         imageURL,
-        category
+        category,
+        datetime:value,
+        createdBy:firebase.auth().currentUser.uid,
+        createdByEmail:firebase.auth().currentUser.email
       }).then((function () {
         console.log("success")
         successAlert()
@@ -240,10 +283,40 @@ const EventAdd = () => {
               placeholder="category"
               onChangeText={category => setCategory(category)}
             />
+              <Text style={styles.formItems}>
+                {value.toString()}
+              </Text>
               {isFieldInError('category') &&
               getErrorsInField('category').map(errorMessage => (
                 <Text key={errorMessage}style={styles.errorText}>{errorMessage}</Text>
               ))}
+              <View style={{flexDirection: "row", justifyContent:"space-around"}}>
+            <AppButton
+              style={styles.button}
+              onPress={showDatepicker}
+              title="Select Date" />
+            <AppButton
+              style={styles.button}
+              onPress={showTimepicker}
+              title="Select TIme" />
+              </View>
+              {show&&
+              <DatePicker
+                androidMode="spinner"
+                style={{ width: 300 }}
+                value={value}
+                is24Hour={true}
+                mode={mode}
+                onChange={onChange}
+                showTimeSelect
+                customStyles={{
+                  dateInput: {
+                    backgroundColor: 'white',
+                    borderWidth: 1,
+                    borderColor: 'black',
+                  },
+                  }}
+              />}
             <View style={{ flexDirection: "row", marginBottom: 24 }}>
               <Text style={{ flex: 0, marginTop: 12 }}>
                 {isPrivate ? "Private" : "Public"}

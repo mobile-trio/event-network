@@ -1,23 +1,88 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
-import { ScrollView, Text, View, Image, Dimensions, TouchableHighlight } from "react-native";
+import React, { useLayoutEffect, useEffect, useState } from "react";
+import { ScrollView, Text, View, Image, Dimensions, TouchableHighlight, FlatList } from "react-native";
 import styles from "./styles";
-import Carousel, { Pagination } from "react-native-snap-carousel";
 import { getIngredientName, getCategoryName, getCategoryById } from "../../data/MockDataAPI";
 import BackButton from "../../components/BackButton/BackButton";
 import ViewIngredientsButton from "../../components/ViewIngredientsButton/ViewIngredientsButton";
+import { Entypo } from '@expo/vector-icons'; 
+import { MaterialIcons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import AppButton from "../../components/AppButton/AppButton";
+import firebase from "firebase";
 
-const { width: viewportWidth } = Dimensions.get("window");
 
 export default function RecipeScreen(props) {
   const { navigation, route } = props;
 
   const item = route.params?.item;
-  const category = getCategoryById(item.categoryId);
-  const title = getCategoryName(category.id);
 
-  const [activeSlide, setActiveSlide] = useState(0);
+  const isPrivate = route.params?.isPrivate;
 
-  const slider1Ref = useRef();
+  const [isJoined, setIsJoined] = useState(false)
+
+  const sendPrivateJoinRequest = () =>{
+    firebase.firestore()
+    .collection('privateEvents')
+    .doc(item.userId)
+    .collection('userEvents')
+    .doc(item.id)
+    .set(
+      { participants: [{id:firebase.auth().currentUser.uid, email:firebase.auth().currentUser.email }] },
+      { merge: true }
+    ).then(
+      setIsJoined(true)
+    )
+  }
+
+  const sendPublicJoinRequest = () =>{
+    firebase.firestore()
+    .collection('publicEvents')
+    .doc(item.id)
+    .set(
+      { participants: [{id:firebase.auth().currentUser.uid, email:firebase.auth().currentUser.email }] },
+      { merge: true }
+    ).then(
+      setIsJoined(true)
+    )
+  }
+
+  const sendPrivateUnjoinRequest = (value) =>{
+    firebase.firestore()
+    .collection('privateEvents')
+    .doc(item.userId)
+    .collection('userEvents')
+    .doc(item.id)
+    .update({
+      "participants": firebase.firestore.FieldValue.arrayRemove({id:firebase.auth().currentUser.uid, email:firebase.auth().currentUser.email })
+    }).then(
+      setIsJoined(false)
+    )
+  }
+
+  const sendPublicUnjoinRequest = () =>{
+    firebase.firestore()
+    .collection('publicEvents')
+    .doc(item.id)
+    .update({
+      "participants": firebase.firestore.FieldValue.arrayRemove({id:firebase.auth().currentUser.uid, email:firebase.auth().currentUser.email })
+    }).then(
+      setIsJoined(false)
+    )
+  }
+
+  const sendJoinRequest = () => {
+    console.log("joining")
+    if(isJoined){
+      isPrivate?sendPrivateUnjoinRequest():sendPublicUnjoinRequest()
+    }else{
+      isPrivate?sendPrivateJoinRequest():sendPublicJoinRequest()
+    }
+
+  }
+
+  useEffect(() => {
+    findIsJoined(item.participants)
+  }, [])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -33,78 +98,78 @@ export default function RecipeScreen(props) {
     });
   }, []);
 
-  const renderImage = ({ item }) => (
-    <TouchableHighlight>
-      <View style={styles.imageContainer}>
-        <Image style={styles.image} source={{ uri: item }} />
+  const renderRecipes = ({ item }) => (
+    <TouchableHighlight underlayColor="rgba(73,182,77,0.9)" >
+      <View style={styles.container}>
+        <Text style={styles.title}>{item.email}</Text>
       </View>
     </TouchableHighlight>
   );
 
-  const onPressIngredient = (item) => {
-    var name = getIngredientName(item);
-    let ingredient = item;
-    navigation.navigate("Ingredient", { ingredient, name });
-  };
+  const findIsJoined = (vendors) =>{
+    var found = false;
+    const uid=firebase.auth().currentUser.uid
+    if(vendors){
+      for(var i = 0; i < vendors.length; i++) {
+        if (vendors[i].id == uid) {
+            found = true;
+            break;
+          }
+        }
+    }
+    
+    console.log("finding")
+    setIsJoined(found)
+  }
+
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.carouselContainer}>
-        <View style={styles.carousel}>
-          <Carousel
-            ref={slider1Ref}
-            data={item.photosArray}
-            renderItem={renderImage}
-            sliderWidth={viewportWidth}
-            itemWidth={viewportWidth}
-            inactiveSlideScale={1}
-            inactiveSlideOpacity={1}
-            firstItem={0}
-            loop={false}
-            autoplay={false}
-            autoplayDelay={500}
-            autoplayInterval={3000}
-            onSnapToItem={(index) => setActiveSlide(0)}
-          />
-          <Pagination
-            dotsLength={item.photosArray.length}
-            activeDotIndex={activeSlide}
-            containerStyle={styles.paginationContainer}
-            dotColor="rgba(255, 255, 255, 0.92)"
-            dotStyle={styles.paginationDot}
-            inactiveDotColor="white"
-            inactiveDotOpacity={0.4}
-            inactiveDotScale={0.6}
-            carouselRef={slider1Ref.current}
-            tappableDots={!!slider1Ref.current}
-          />
-        </View>
+        <Image source={{ uri: item.imageURL }} style={{ minHeight: 250, borderRadius: 8, marginTop: 8,borderColor:"#009688" }} />
       </View>
       <View style={styles.infoRecipeContainer}>
-        <Text style={styles.infoRecipeName}>{item.title}</Text>
+        <Text style={styles.infoRecipeName}>{item.name}</Text>
         <View style={styles.infoContainer}>
-          <TouchableHighlight onPress={() => navigation.navigate("RecipesList", { category, title })}>
-            <Text style={styles.category}>{getCategoryName(item.categoryId).toUpperCase()}</Text>
-          </TouchableHighlight>
+          <MaterialIcons name="category" size={24} color="#009688" />
+            <Text style={styles.infoRow}>{item.category}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+        <MaterialCommunityIcons name="calendar" size={24} color="#009688" />
+          <Text style={styles.infoRow}>{item.datetime.toDate().toString()}</Text>
         </View>
 
         <View style={styles.infoContainer}>
-          <Image style={styles.infoPhoto} source={require("../../../assets/icons/time.png")} />
-          <Text style={styles.infoRecipe}>{item.time} minutes </Text>
+          <Entypo name="location" size={24} color="#009688" />
+          <Text style={styles.infoRow}>{item.location} </Text>
         </View>
+        
 
         <View style={styles.infoContainer}>
-          <ViewIngredientsButton
-            onPress={() => {
-              let ingredients = item.ingredients;
-              let title = "Ingredients for " + item.title;
-              navigation.navigate("IngredientsDetails", { ingredients, title });
-            }}
-          />
+          <MaterialIcons name="description" size={24} color="#009688" />
+          <Text style={styles.infoRow}>{item.description}</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Text style={styles.infoDescriptionRecipe}>{item.description}</Text>
+          <Entypo name="user" size={24} color="#009688" />
+          <Text style={styles.infoRow}>{item.createdByEmail}</Text>
         </View>
+
+
+        <AppButton 
+        title={isJoined?"Unjoin":"Join"} 
+        onPress={()=>sendJoinRequest()}
+        />
+
+        <FlatList 
+          extraData={true}
+          vertical 
+          showsVerticalScrollIndicator={false} 
+          numColumns={2} 
+          data={item.participants} 
+          renderItem={renderRecipes} 
+          keyExtractor={(item) => `${item.id}`} />
+        
+
       </View>
     </ScrollView>
   );

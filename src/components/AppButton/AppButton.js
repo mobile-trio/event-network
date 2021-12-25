@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Button, StyleSheet, TouchableOpacity, Text } from "react-native";
 
-const AppButton = ({ onPress, title }) => (
-  <TouchableOpacity onPress={onPress} style={styles.appButtonContainer}>
+const AppButton = ({ onPress, title,disabled }) => (
+  <TouchableOpacity onPress={onPress} style={styles.appButtonContainer} disabled={disabled}>
     <Text style={styles.appButtonText}>{title}</Text>
   </TouchableOpacity>
 );
@@ -16,7 +16,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#009688",
     borderRadius: 10,
     paddingVertical: 10,
-    paddingHorizontal: 12
+    paddingHorizontal: 12,
+    marginVertical:6
   },
   appButtonText: {
     fontSize: 18,

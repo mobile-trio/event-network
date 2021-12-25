@@ -7,6 +7,7 @@ import { getCategoryNameFirebase,addAllRecipes,addCategories,addIngredients,getA
 import Firebase from '../../../firebaseConfig';
 
 const PublicEvents = (props) =>{
+  const { navigation } = props;
   const [events,setEvents] = useState([])
   const [isRefreshing, setIsRefreshing] = useState(false)
   
@@ -30,7 +31,7 @@ const PublicEvents = (props) =>{
   }
 
   const onPressRecipe = (item) => {
-    navigation.navigate("Recipe", { item });
+    navigation.navigate("Recipe", { item,isPrivate:false });
   };
 
   const renderRecipes = ({ item }) => (
