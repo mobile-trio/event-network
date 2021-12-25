@@ -27,7 +27,7 @@ const EventAdd = () => {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const [isImageFromGallery, setIsImageFromGallery] = useState(false)
+  const [isImageFromGallery, setIsImageFromGallery] = useState(true)
   const [isPrivate, setIsPrivate] = useState(false);
   const toggleSwitch = () => setIsPrivate(previousState => !previousState);
   const toggleSwitchGallery = () => {

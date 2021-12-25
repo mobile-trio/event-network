@@ -3,12 +3,14 @@ import { View } from "react-native";
 import PropTypes from "prop-types";
 import styles from "./styles";
 import MenuButton from "../../components/MenuButton/MenuButton";
-import Firebase from '../../../firebaseConfig';
+import firebase from 'firebase';
+import { MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons'; 
 
 export default function DrawerContainer(props) {
   const { navigation } = props;
   const [user, setUser] = useState()
-  Firebase.auth().onAuthStateChanged( (currentUser) => {
+  firebase.auth().onAuthStateChanged( (currentUser) => {
     setUser(currentUser)
   })
   return (
@@ -16,74 +18,59 @@ export default function DrawerContainer(props) {
       <View style={styles.container}>
         <MenuButton
           title="HOME"
-          source={require("../../../assets/icons/home.png")}
           onPress={() => {
             navigation.navigate("Home");
             navigation.closeDrawer();
-          }}
-        />
-        <MenuButton
+          }}><MaterialIcons name="home" size={24} color="black" /></MenuButton>
+        {user&&<MenuButton
           title="EVENT ADD"
-          source={require("../../../assets/icons/home.png")}
           onPress={() => {
             navigation.navigate("Event Add");
             navigation.closeDrawer();
           }}
-        />
-        <MenuButton
-          title="CATEGORIES"
-          source={require("../../../assets/icons/category.png")}
-          onPress={() => {
-            navigation.navigate("Categories");
-            navigation.closeDrawer();
-          }}
-        />
-        <MenuButton
+        ><MaterialIcons name="event" size={24} color="black" /></MenuButton>}
+        {user&&<MenuButton
           title="SEARCH"
-          source={require("../../../assets/icons/search.png")}
           onPress={() => {
             navigation.navigate("Search");
             navigation.closeDrawer();
           }}
-        />
-        {!Firebase.auth().currentUser&&
+        ><MaterialIcons name="search" size={24} color="black" /></MenuButton>}
+        {!user&&
 
         <MenuButton
           title="LOGIN"
-          source={require("../../../assets/icons/home.png")}
           onPress={() => {
             navigation.navigate("Login");
             navigation.closeDrawer();
           }}
-        />
+        ><MaterialIcons name="event" size={24} color="black" /></MenuButton>
         }
       {!user&&
         <MenuButton
           title="REGISTER"
-          source={require("../../../assets/icons/home.png")}
           onPress={() => {
             navigation.navigate("Register");
             navigation.closeDrawer();
           }}
-        />
+        ><MaterialIcons name="event" size={24} color="black" /></MenuButton>
       }
       {user&&
       <MenuButton
           title="PROFILE"
-          source={require("../../../assets/icons/home.png")}
           onPress={() => {
             navigation.navigate("Profile");
             navigation.closeDrawer();
           }}
-        />}
+        ><FontAwesome name="user-circle-o" size={24} color="black" /></MenuButton>
+        }
       {user&&
       <MenuButton
           title="Logout"
-          source={require("../../../assets/icons/home.png")}
           onPress={() => {
-            Firebase.auth().signOut()
+            firebase.auth().signOut()
           }}
-        />}
+        ><MaterialIcons name="logout" size={24} color="black" /></MenuButton>}
       </View>
     </View>
   );

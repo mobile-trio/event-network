@@ -79,6 +79,7 @@ export default function Login(props) {
             <TextInput
               style={commonFormStyles.formItems}
               placeholder="password"
+              secureTextEntry={true}
               onChangeText={password => setPassword(password)}
             />
             {isFieldInError('password') &&
@@ -88,7 +89,7 @@ export default function Login(props) {
             <AppButton
               style={commonFormStyles.button}
               onPress={() => _onPressButton()}
-              title="Register" />
+              title="LogIn" />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

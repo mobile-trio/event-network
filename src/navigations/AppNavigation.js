@@ -1,16 +1,11 @@
 import React from 'react'
-
 import {createStackNavigator} from '@react-navigation/stack'
 import {NavigationContainer} from '@react-navigation/native'
 import {createDrawerNavigator} from '@react-navigation/drawer' 
 import HomeScreen from '../screens/Home/HomeScreen';
-import CategoriesScreen from '../screens/Categories/CategoriesScreen';
-import RecipeScreen from '../screens/Recipe/RecipeScreen';
-import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
+import EventScreen from '../screens/Event/EventScreen';
 import DrawerContainer from '../screens/DrawerContainer/DrawerContainer';
-import IngredientScreen from '../screens/Ingredient/IngredientScreen';
 import SearchScreen from '../screens/Search/SearchScreen';
-import IngredientsDetailsScreen from '../screens/IngredientsDetails/IngredientsDetailsScreen';
 import Register from '../screens/Register/Register'
 import Login from '../screens/Login/Login'
 import EventAdd from '../screens/EventAdd/EventAdd'
@@ -37,12 +32,8 @@ function MainNavigator() {
       <Stack.Screen name='Register' component={Register} />
       <Stack.Screen name='Login' component={Login} />
       <Stack.Screen name='Event Add' component={EventAdd} />
-      <Stack.Screen name='Categories' component={CategoriesScreen}/>
-      <Stack.Screen name='Recipe' component={RecipeScreen}/>
-      <Stack.Screen name='RecipesList' component={RecipesListScreen} />
-      <Stack.Screen name='Ingredient' component={IngredientScreen} />
+      <Stack.Screen name='Event' component={EventScreen}/>
       <Stack.Screen name='Search' component={SearchScreen} />
-      <Stack.Screen name='IngredientsDetails' component={IngredientsDetailsScreen} />
       <Stack.Screen name='Profile' component={ProfileScreen} />
     </Stack.Navigator>
   )

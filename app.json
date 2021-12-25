@@ -11,9 +11,9 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/splashImg.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splashImg.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -27,7 +27,8 @@
       "supportsTablet": true
     },
     "android": {
-      "useNextNotificationsApi": true
+      "useNextNotificationsApi": true,
+      "package": "com.deonsky.eventnetworkapp"
     }
   }
 }

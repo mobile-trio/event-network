@@ -80,7 +80,7 @@ export default function Login(props) {
   const renderFriendRequests = ({ item }) => (
     <View style={{borderBottomWidth:2}}>
       <Text style={styles.title}>{item.email}</Text>
-      <AppButton title="Accept Request" onClick={() => acceptFriendRequest(item)} />
+      <AppButton title="Accept Request" onPress={() => acceptFriendRequest(item)} />
     </View>
   );
 
