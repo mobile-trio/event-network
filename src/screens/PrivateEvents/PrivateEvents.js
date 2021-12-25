@@ -3,23 +3,59 @@ import { FlatList, Text, View, TouchableHighlight, Image, RefreshControl } from 
 import styles from "./styles";
 //import { events,categories,ingredients } from "../../data/dataArrays";
 import MenuImage from "../../components/MenuImage/MenuImage";
-import { getCategoryNameFirebase,addAllRecipes,addCategories,addIngredients,getAllRecipes,getAllPublicEvents } from "../../data/MockDataAPI";
+import {  getPrivateFriendEvents,getAllPublicEvents } from "../../data/MockDataAPI";
 import Firebase from '../../../firebaseConfig';
+import firebase from "firebase";
 
 
 const PrivateEvents = (props) =>{
+  const [user, setUser] = useState()
   const [events,setEvents] = useState([])
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   useEffect(() => {
     //addIngredients(ingredients)
     setIsRefreshing(true)
-    getAllPublicEvents().then(res=>{
-      setEvents(res)
-      setIsRefreshing(false)
-    })
+      Firebase.firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser?.uid)
+      .get()
+      .then((snapshot) => {
+        if(snapshot.exists){
+          let friends = snapshot.data().friends;
+          setUser(snapshot.data())
+          console.log(snapshot.data())
+
+          Promise.all(
+            friends.map(friend=>{
+              return new Promise((resolve, reject) => {
+                getPrivateFriendEvents(friend)
+                  .then(friendEvents=>resolve(
+                    friend,
+                    friend.friendEvents= friendEvents.map(event=>{
+                      event.userId=friend.id
+                      event.userEmail=friend.email
+                      return event
+                      }
+                    )
+                  ))
+                  .catch(er=>{console.log(er)})
+              })   
+
+            })).then(res=>{
+              const result = Array.prototype.concat.apply([],res.map(item=>item.friendEvents))
+              console.log(result)
+              setEvents(result)
+            })
+            
+        }
+        else{
+          console.log("does not exist")
+        }
+        setIsRefreshing(false)
+      })
     
-  }, [])
+  }, [firebase.auth().currentUser?.uid])
 
   const handleRefresh = () => {
     setIsRefreshing(true)

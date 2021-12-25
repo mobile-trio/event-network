@@ -149,6 +149,23 @@ export async function getAllEvents(){
   return recipesArray;
 }
 
+export async function getPrivateFriendEvents(friend){
+  var friendEventsArray = [];
+  await Firebase.firestore()
+    .collection("privateEvents")
+    .doc(friend.id)
+    .collection("userEvents")
+    .get()
+    .then((snapshot) => {
+      friendEventsArray = snapshot.docs.map(doc => {
+        const id = doc.id;
+        const data = doc.data();
+        return {id,...data};
+      })})
+  console.log(friendEventsArray)
+  return friendEventsArray;
+}
+
 export function addRecipe(recipe){
   Firebase.firestore()
   .collection("recipes").add({

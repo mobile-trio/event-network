@@ -52,7 +52,7 @@ export default function SearchScreen(props) {
     .collection('users')
     .doc(user.id)
     .set(
-      { friendRequests: [firebase.auth().currentUser.uid ] },
+      { friendRequests: [{id:firebase.auth().currentUser.uid, email:firebase.auth().currentUser.email }] },
       { merge: true }
     )
     
