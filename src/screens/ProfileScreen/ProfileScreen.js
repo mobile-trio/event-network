@@ -43,9 +43,8 @@ export default function Login(props) {
     firebase.firestore()
       .collection('users')
       .doc(firebase.auth().currentUser.uid)
-      .set(
-        { friends: [item] },
-        { merge: true }
+      .update(
+        { friends: firebase.firestore.FieldValue.arrayUnion(item)}
       ).then(
         setIsRefreshing(false)
       )
@@ -100,7 +99,7 @@ export default function Login(props) {
             extraData={true}
             vertical
             showsVerticalScrollIndicator={false}
-            numColumns={2}
+            numColumns={1}
             data={user?.friendRequests}
             renderItem={renderFriendRequests}
             refreshing={isRefreshing}
@@ -114,7 +113,7 @@ export default function Login(props) {
             extraData={true}
             vertical
             showsVerticalScrollIndicator={false}
-            numColumns={2}
+            numColumns={1}
             data={user?.friends}
             renderItem={renderFriends}
             refreshing={isRefreshing}

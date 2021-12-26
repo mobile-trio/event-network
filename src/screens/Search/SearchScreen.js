@@ -53,10 +53,9 @@ export default function SearchScreen(props) {
     firebase.firestore()
       .collection('users')
       .doc(user.id)
-      .set(
-        { friendRequests: [{ id: firebase.auth().currentUser.uid, email: firebase.auth().currentUser.email }] },
-        { merge: true }
-      )
+      .update(
+        { friendRequests: firebase.firestore.FieldValue.arrayUnion( {id: firebase.auth().currentUser.uid, email: firebase.auth().currentUser.email } 
+      )})
 
   }
 
