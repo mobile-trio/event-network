@@ -1,13 +1,13 @@
 import React, {useState } from 'react'
 import {View,Button,TextInput} from 'react-native'
-import Firebase from '../../../firebaseConfig';
+import firebase from 'firebase';
 import * as Notifications from 'expo-notifications'
 import Constants from 'expo-constants'
 
 
   export async function sendNotificationToAllUsers (title,body) {
 
-    const users = await Firebase.firestore().collection("users").get();
+    const users = await firebase.firestore().collection("users").get();
     users.docs.map(user => sendPushNotification(user.data().token,title,body))
   }
 
@@ -51,10 +51,10 @@ import Constants from 'expo-constants'
     }
   
     if(token){
-      const res = await Firebase
+      const res = await firebase
       .firestore()
       .collection('users')
-      .doc(Firebase.auth().currentUser.uid)
+      .doc(firebase.auth().currentUser.uid)
       .set({token},{merge:true})
       console.log(res+"123")
     }

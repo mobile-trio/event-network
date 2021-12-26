@@ -3,7 +3,7 @@ import LoadingIndicator from '../../components/LoadingIndicator/LoadingIndicator
 import { useValidation } from 'react-native-form-validator';
 import React, {useState } from 'react'
 import { View, Button, TextInput, Text, Image, Switch, KeyboardAvoidingView, ScrollView, TouchableOpacity,Alert } from 'react-native'
-import Firebase from '../../../firebaseConfig';
+import firebase from 'firebase';
 import {registerForPushNotificationsAsync} from "../../components/Notification/Notification"
 import commonFormStyles from '../../styles/commonFormStyles';
 
@@ -42,7 +42,7 @@ export default function Login(props) {
 
   const Login = () => {
     setIsLoading(true)
-    Firebase.auth().signInWithEmailAndPassword(email,password)
+    firebase.auth().signInWithEmailAndPassword(email,password)
     .then((result)=>{
       registerForPushNotificationsAsync().then(
         res=>{}

@@ -97,7 +97,8 @@ export default function EventScreen(props) {
           }}
         />
       ),
-      headerRight: () => {if(firebase.auth().currentUser?.uid==item.createdBy){
+      headerRight: () => {
+        if(firebase?.auth()?.currentUser?.uid==item.createdBy){
         return <DeleteButton
           onPress={() => {
             deleteEvent();

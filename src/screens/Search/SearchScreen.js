@@ -4,7 +4,6 @@ import styles from "./styles";
 import MenuImage from "../../components/MenuImage/MenuImage";
 import { getUserByEmail } from "../../data/MockDataAPI";
 import { TextInput } from "react-native-gesture-handler";
-import Firebase from "../../../firebaseConfig";
 import AppButton from "../../components/AppButton/AppButton";
 import firebase from "firebase";
 import { MaterialIcons } from '@expo/vector-icons';

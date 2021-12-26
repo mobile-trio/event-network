@@ -3,7 +3,7 @@ import LoadingIndicator from '../../components/LoadingIndicator/LoadingIndicator
 import { useValidation } from 'react-native-form-validator';
 import React, {useState } from 'react'
 import { View, Button, TextInput, Text,  KeyboardAvoidingView, ScrollView, Alert } from 'react-native'
-import Firebase from '../../../firebaseConfig';
+import firebase from 'firebase';
 import commonFormStyles from '../../styles/commonFormStyles';
 
 export default function Register(props) {
@@ -42,10 +42,10 @@ export default function Register(props) {
   };
 
   const onRegister = () => {
-    Firebase.auth().createUserWithEmailAndPassword(email,password)
+    firebase.auth().createUserWithEmailAndPassword(email,password)
     .then((result)=>{
-      Firebase.firestore().collection("users")
-        .doc(Firebase.auth().currentUser.uid)
+      firebase.firestore().collection("users")
+        .doc(firebase.auth().currentUser.uid)
         .set({
           email,
           password

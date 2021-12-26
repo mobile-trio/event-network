@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react'
-import { View, Button, TextInput, Text, Image, Switch, TouchableHighlight, ScrollView, TouchableOpacity, Alert, FlatList } from 'react-native'
-import Firebase from '../../../firebaseConfig';
-import commonFormStyles from '../../styles/commonFormStyles';
+import { View, Text, FlatList } from 'react-native'
 import AppButton from '../../components/AppButton/AppButton';
 import styles from "./styles";
 import firebase from 'firebase';
@@ -21,9 +19,9 @@ export default function Login(props) {
   function fetchUser() {
 
     setIsRefreshing(true)
-    Firebase.firestore()
+    firebase.firestore()
       .collection("users")
-      .doc(Firebase.auth().currentUser.uid)
+      .doc(firebase.auth().currentUser.uid)
       .get()
       .then((snapshot) => {
         if (snapshot.exists) {
@@ -44,7 +42,7 @@ export default function Login(props) {
     setIsRefreshing(true)
     firebase.firestore()
       .collection('users')
-      .doc(Firebase.auth().currentUser.uid)
+      .doc(firebase.auth().currentUser.uid)
       .set(
         { friends: [item] },
         { merge: true }
@@ -52,9 +50,9 @@ export default function Login(props) {
         setIsRefreshing(false)
       )
 
-    Firebase.firestore()
+    firebase.firestore()
       .collection("users")
-      .doc(Firebase.auth().currentUser.uid)
+      .doc(firebase.auth().currentUser.uid)
       .update({
         "friendRequests": firebase.firestore.FieldValue.arrayRemove(item)
       })
