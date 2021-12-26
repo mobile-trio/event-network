@@ -42,6 +42,15 @@ export default function Login(props) {
     setIsRefreshing(true)
     firebase.firestore()
       .collection('users')
+      .doc(item.id)
+      .update(
+        { friends: firebase.firestore.FieldValue.arrayUnion({id: firebase.auth().currentUser.uid, email: firebase.auth().currentUser.email })}
+      ).then(
+        setIsRefreshing(false)
+      )
+
+    firebase.firestore()
+      .collection('users')
       .doc(firebase.auth().currentUser.uid)
       .update(
         { friends: firebase.firestore.FieldValue.arrayUnion(item)}
